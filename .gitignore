@@ -1,0 +1,36 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Byproducts
+*.out
+*.dSYM/
+
+# Node/npm (if any frontend)
+node_modules/
+
+# Misc
+*.swp
+*.swo
+.idea/
+*.iml
+
+# Ignore binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Ignore test output
+/tests/output/
