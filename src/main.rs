@@ -1,27 +1,24 @@
-// This file is the entry point of the application. It sets up the HTTP server and routes for handling incoming requests.
-
-use actix_web::{web, App, HttpServer};
-
 mod handlers;
-pub mod models;
-pub mod utils;
+mod models;
+mod utils;
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .service(web::scope("/keypair").route("", web::post().to(handlers::keypair::generate_keypair)))
-            .service(web::scope("/token")
-                .route("/create", web::post().to(handlers::token::create_token))
-                .route("/mint", web::post().to(handlers::token::mint_token)))
-            .service(web::scope("/message")
-                .route("/sign", web::post().to(handlers::message::sign_message))
-                .route("/verify", web::post().to(handlers::message::verify_message)))
-            .service(web::scope("/send")
-                .route("/sol", web::post().to(handlers::sol::send_sol))
-                .route("/token", web::post().to(handlers::sol::send_token)))
-    })
-    .bind("127.0.0.1:8080")?
-    .run()
-    .await
+use axum::{routing::post, Router};
+
+#[tokio::main]
+async fn main() {
+    let app = Router::new()
+        .route("/keypair", post(handlers::keypair::handle_keypair_generation))
+        .route("/token/create", post(handlers::token::handle_token_creation))
+        .route("/token/mint", post(handlers::token::handle_token_minting))
+        .route("/send/token", post(handlers::token::handle_token_transfer))
+        // .route("/message/sign", post(handlers::message::handle_message_signing))
+        // .route("/message/verify", post(handlers::message::handle_message_verification))
+        // .route("/send/sol", post(handlers::sol::handle_sol_transfer))
+        ;
+
+    let tcp_listener = tokio::net::TcpListener::bind("0.0.0.0:3001")
+        .await
+        .expect("Failed to bind to port 3001");
+    println!("Solana HTTP server running on http://0.0.0.0:3001");
+    axum::serve(tcp_listener, app).await.unwrap();
 }

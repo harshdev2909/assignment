@@ -35,3 +35,4 @@ pub fn verify_message(message: &str, signature: &str, pubkey: &str) -> Result<bo
     let signature = solana_sdk::signature::Signature::new(&signature_bytes);
     Ok(signature.verify(pubkey.as_ref(), message.as_bytes()))
 }
+
